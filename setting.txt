@@ -1,0 +1,6 @@
+macd = "1.25"
+LMA = "100"
+SMA = "10"
+setTime = "200"
+ColName = "Load cell"
+path = "./160721/"
