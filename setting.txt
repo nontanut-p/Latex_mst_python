@@ -1,0 +1,6 @@
+macd = "1.25"
+LMA = "150"
+SMA = "50"
+setTime = "300"
+ColName = "Distance"
+path = "./111064/"

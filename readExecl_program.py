@@ -89,7 +89,7 @@ def readData():
 
 
 def movingAV():
-    global loadCellMA, laserDisMA, zeros, ones, mstLaser, mstLoad, failStatus
+    global loadCellMA, laserDisMA, mstLaser, mstLoad, failStatus
     myrange = len(laserDisMA)
     stateLOAD = 1
     stateLASER = 1
@@ -97,19 +97,10 @@ def movingAV():
     longlenght = long
     # statistics.mean(y1_vals[arraylenght-12:arraylenght])
     for arraylenght in range(myrange):
-        zeros.append(0)
-        ones.append(1)
-        if arraylenght <= 1:
+        if arraylenght <= 1 and arraylenght <= shortlenght:
             shortMovingLoad.append(0)
             longMovingLoad.append(0)
             shortMovingLaser.append(0)
-            longMovingLaser.append(0)
-            MACDLASER.append(0)
-            MACDLOAD.append(0)
-        if arraylenght > 1 and arraylenght <= shortlenght:
-            shortMovingLoad.append(0)
-            shortMovingLaser.append(0)
-            longMovingLoad.append(0)
             longMovingLaser.append(0)
             MACDLASER.append(0)
             MACDLOAD.append(0)
@@ -142,7 +133,6 @@ def movingAV():
             longMovingLoad.append(LongEMA)
             myMACD = ShortEMA - LongEMA
             MACDLOAD.append(0)
-
         if arraylenght >= (longlenght + shortlenght):
             if arraylenght == humanMST:  # MST FIXED
                 ShortEMA = statistics.mean(
@@ -232,15 +222,15 @@ def plotXY():
         ax[2].text(mstLoad, 2.5, text, color='lime',
                    horizontalalignment='center', verticalalignment='center', size=18)
         ax[2].axvline(x=mstLoad, color='lime', lw=2)
-        #ax[1].axvline(x=humanLaserin[int(filename) - 1], color='y', lw=2)
-        #ax[2].axvline(x=humanLoadin[int(filename)-1], color='y', lw=2)
+        ax[1].axvline(x=humanLaserin[int(filename) - 1], color='y', lw=2)
+        ax[2].axvline(x=humanLoadin[int(filename)-1], color='y', lw=2)
 
     ax[1].set_ylim(-2, 3)
     ax[2].set_ylim(-2, 3)
     ax[1].plot(MACDLASER, color='r')
-    ax[1].legend(["LASER ", "HUMAN", "%Error Projection"], loc="lower right")
+    ax[1].legend(["LASER ", "HUMAN"], loc="lower right")
     ax[2].plot(MACDLOAD, color='g')
-    ax[2].legend(["LOADCELL ", "HUMAN", "%Error Projection"],
+    ax[2].legend(["LOADCELL ", "HUMAN"],
                  loc="lower right")
     ax[1].arrow(0.2, 0.3, 0.7, 0.0, color='green',
                 head_length=0.07, head_width=0.025,
@@ -277,14 +267,14 @@ def plotXY():
     MSTLOADLIST.append(MSTLoad)
     MSTLASERLIST.append(MSTLaser)
     #print('mstLaser =', MSTLaser)
-    # plt.show()
+    plt.show()
 
 
 def repeat():
     global filename, loadCell, failStatus, timeMT, mstLoad, mstLaser, zeros, ones, mst, shortMovingLaser, longMovingLaser, shortMovingLoad, longMovingLoad, MACDLASER, MACDLOAD
     MSTLaser.clear()
     MSTLoad.clear()
-    for i in range(1, 12):  # filenumber
+    for i in range(1, 2):  # filenumber
         filename = str(i)
         readData()
         timeMT.clear()
@@ -319,100 +309,6 @@ def repeat():
     print('Human LOADCELL ', forceHumanLOAD)
     print('Force on laser ALGO', forceOnlaser)
     print('Force on laserHUMAN', forceHumanLaser)
-
-
-def plotdiff():
-    numberof = []
-    fig = plt.gcf()
-    ax = fig.add_subplot(111)
-    mstLoad = [1080, 1112, 1102, 359, 1028, 1083, 1076, 1041, 948, 1004,
-               983, 1028, 975, 943, 931, 427, 1026, 978, 575, 549, 1097, 1010, 287]
-    mstLaser = [1071, 1068, 645, 592, 991, 1073, 1077, 1047, 790, 1005,
-                1080, 1103, 967, 906, 857, 972, 1034, 1036, 936, 975, 1033, 1040, 1090]
-    x_axis = len(mstLoad)
-    mstHuman = humanMST
-    y_axisLoad = []
-    y_axisLaser = []
-    myloop = len(mstLoad)
-    for i in range(myloop):
-        y_axisLoad.append(
-            100*((mstLoad[i]) - mstHuman)/((mstHuman+(mstLoad[i]))/2))
-        y_axisLaser.append(
-            100*(mstLaser[i] - mstHuman)/((mstHuman+mstLaser[i])/2))
-    ax.plot(y_axisLoad, color='g')
-    ax.plot(y_axisLaser, color='r')
-    text1 = " %LOADCELL:" + str(round(statistics.mean(y_axisLoad), 2))
-    plt.axhline(y=statistics.mean(y_axisLoad), xmin=0,
-                xmax=10, linewidth=0.5, color='g')
-    ax.text(0.25, -20, text1, color='b', horizontalalignment='center',
-            verticalalignment='center', size=10)
-    text2 = "%LASER:" + str(round(statistics.mean(y_axisLaser), 2))
-    plt.axhline(y=statistics.mean(y_axisLaser), xmin=0,
-                xmax=10, linewidth=0.5, color='r')
-    ax.text(0.25, -25, text2, color='b', horizontalalignment='center',
-            verticalalignment='center', size=10)
-    # ax.plot(,numberof, color='g')
-    ax.text(0.25, -30, "Average : " + str(round(((statistics.mean(y_axisLoad) + statistics.mean(y_axisLaser)) / 2), 2)),
-            color='r', horizontalalignment='center', verticalalignment='center', size=10)
-    # ax.plot(statistics.mean(y_axisLaser),numberof color='r')
-    print(text1)
-    # ax.plot(timeMT, y_axisLaser, color='b')
-    ax.legend(['LoadCell', 'Laser', "AV LOAD", "AV LASER"], loc="lower right")
-    # plt.autoscale(tight=True)
-    fig.set_size_inches(15, 10)
-    fig.canvas.draw()
-    plt.savefig('MACD_HUMANDIFF.png', dpi=400)
-    print("load", y_axisLoad)
-    print('laser', y_axisLaser)
-    plt.show()
-# plot human detectd ไปใน ax[1] , ax[2]
-
-
-def plotprojectdiff():
-
-    fig = plt.gcf()
-    ax = fig.add_subplot(111)
-    mstLoad = [1080, 1112, 1102, 359, 1028, 1083, 1076, 1041, 948, 1004,
-               983, 1028, 975, 943, 931, 427, 1026, 978, 575, 549, 1097, 1010, 287]
-    mstLaser = [1071, 1068, 645, 592, 991, 1073, 1077, 1047, 790, 1005,
-                1080, 1103, 967, 906, 857, 972, 1034, 1036, 936, 975, 1033, 1040, 1090]
-    x_axis = len(mstLoad)
-    mstHuman = humanMST
-    y_axisLoad = []
-    y_axisLaser = []
-    percenDiff = 1.1485
-    myloop = len(mstLoad)
-    for i in range(myloop):
-        y_axisLoad.append(
-            100*((mstLoad[i] * percenDiff) - mstHuman)/((mstHuman+(mstLoad[i] * percenDiff))/2))
-        y_axisLaser.append(
-            100*((mstLaser[i] * percenDiff) - mstHuman)/((mstHuman+(mstLaser[i] * percenDiff))/2))
-    ax.plot(y_axisLoad, color='g')
-    ax.plot(y_axisLaser, color='r')
-    text1 = " %LOADCELL:" + str(round(statistics.mean(y_axisLoad), 2))
-    plt.axhline(y=statistics.mean(y_axisLoad), xmin=0,
-                xmax=10, linewidth=0.5, color='g')
-    ax.text(1, -20, text1, color='b', horizontalalignment='center',
-            verticalalignment='center', size=10)
-    text2 = "%LASER:" + str(round(statistics.mean(y_axisLaser), 2))
-    plt.axhline(y=statistics.mean(y_axisLaser), xmin=0,
-                xmax=10, linewidth=0.5, color='r')
-    ax.text(1, -25, text2, color='b', horizontalalignment='center',
-            verticalalignment='center', size=10)
-    # ax.plot(,numberof, color='g')
-    ax.text(1, -30, "Average : " + str(round(((statistics.mean(y_axisLoad) + statistics.mean(y_axisLaser)) / 2), 2)),
-            color='r', horizontalalignment='center', verticalalignment='center', size=10)
-    # ax.plot(statistics.mean(y_axisLaser),numberof color='r')
-    print(text1)
-    # ax.plot(timeMT, y_axisLaser, color='b')
-    ax.legend(['LoadCell', 'Laser', "AV LOAD", "AV LASER"], loc="lower right")
-    # plt.autoscale(tight=True)
-    fig.set_size_inches(15, 10)
-    fig.canvas.draw()
-    plt.savefig('MACD_PROJECT_DIFF.png', dpi=400)
-    print("load", y_axisLoad)
-    print('laser', y_axisLaser)
-    plt.show()
 
 
 # plotxy()

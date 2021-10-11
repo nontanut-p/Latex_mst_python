@@ -1,0 +1,5 @@
+Equation : นำข้อมูลมาหาค่าเฉลี่ยๆ ทุกๆ 30 และ 150 ตัว  
+short = sum(data1+data2+ ...+ data30)/30 
+long = sum(data1+ data2 + ...+ data150)/150  
+
+นำค่า short - long >= 1.25 คือจุด detect
